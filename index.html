@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>公司內部管理網站・示範</title>
+<style>
+:root{--deep:#1e3a5f;--bg:#f6f8fb;--card:#fff;--line:#d5dbe3;--tint:#eef2f7;--ink:#1f2a37;--sub:#5b6675;--ok:#1f6e52;--okbg:#e7f4ee;--bad:#a8412f;--badbg:#fbeae6;--acc:#2f6fb3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+header{background:var(--deep);color:#fff;padding:18px 24px}
+header h1{margin:0;font-size:20px}
+header p{margin:2px 0 0;font-size:14px;opacity:.85}
+main{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+#hero{background:#0e1b2c;border-radius:12px;overflow:hidden;margin-bottom:20px}
+#hero video{display:block;width:100%;height:auto}
+.note{background:var(--tint);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--sub);margin-bottom:16px}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px}
+section.card h2{margin:0 0 4px;font-size:18px;color:var(--deep)}
+section.card .sub{margin:0 0 12px;font-size:14px;color:var(--sub)}
+input,select,button{font:inherit}
+input,select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink)}
+button{border:0;border-radius:8px;padding:8px 16px;background:var(--deep);color:#fff;cursor:pointer}
+button.ghost{background:#fff;color:var(--deep);border:1px solid var(--line)}
+button.del{background:var(--badbg);color:var(--bad);padding:4px 10px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#loginMsg{margin-top:10px;padding:8px 12px;border-radius:8px;font-size:15px;display:none}
+#loginMsg.ok{display:block;background:var(--okbg);color:var(--ok)}
+#loginMsg.no{display:block;background:var(--badbg);color:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:13px;background:var(--tint);border:1px solid var(--line);border-radius:999px;padding:2px 10px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{background:var(--tint);color:var(--sub);font-weight:600;font-size:13px}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:999px}
+.tag.admin{background:#e8eefb;color:#254a9a}.tag.edit{background:var(--okbg);color:var(--ok)}.tag.view{background:#f1efe7;color:#6b5d2a}
+#app{display:none}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.view{border:1px solid var(--line);border-radius:10px;background:#fbfcfe;overflow:hidden}
+.view .bar{display:flex;justify-content:space-between;align-items:center;background:var(--tint);padding:8px 12px;font-size:14px}
+.view .bar b{color:var(--deep)}
+.live{font-size:12px;color:var(--ok)}
+.view ul{list-style:none;margin:0;padding:8px 12px;min-height:170px}
+.view li{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.view li.done span.t{text-decoration:line-through;color:var(--sub)}
+.view li .by{margin-left:auto;font-size:12px;color:var(--sub)}
+.view li.flash{animation:fl 1.2s}
+@keyframes fl{from{background:#fff6cc}to{background:transparent}}
+.view form{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--line)}
+.view form input{flex:1;min-width:0}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+ol.steps li{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfcfe}
+ol.steps li b{display:block;color:var(--deep);margin-bottom:2px}
+ol.steps li span{font-size:14px;color:var(--sub)}
+ol.steps li .n{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:var(--deep);color:#fff;font-size:13px;margin-right:6px}
+footer{text-align:center;font-size:13px;color:var(--sub);padding:10px 0 30px}
+@media(max-width:760px){.boards{grid-template-columns:1fr}ol.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>公司內部管理網站・示範</h1><p>登入白名單、帳號權限管理、多人共用資料同步、上架流程——全部是虛構資料的示範</p></header>
+<main>
+<div id="hero"><video id="heroVideo" src="hero.mp4" poster="hero-poster.jpg" muted playsinline autoplay preload="auto"></video></div>
+<div class="note">這是投標用概念示範，資料全為虛構、存在您瀏覽器內。正式版會改成雲端資料庫與正式登入（Email 白名單／公司帳號），資料才會跨裝置共用。</div>
+
+<section class="card" id="login">
+  <h2>① 登入：只有白名單的人進得來</h2>
+  <p class="sub">輸入 Email 試試看。在白名單內的人才能進入，其他人會被擋下。</p>
+  <div class="row"><input id="email" type="email" placeholder="輸入公司 Email" size="30"><button id="loginBtn" type="button">登入</button></div>
+  <div class="chips" id="chips"></div>
+  <div id="loginMsg"></div>
+</section>
+
+<div id="app">
+<section class="card" id="admin">
+  <h2>② 管理者：新增、移除員工帳號與權限</h2>
+  <p class="sub">管理者可隨時新增或停用員工，不必改程式。三種權限：管理者、可編輯、僅檢視。</p>
+  <div class="row" style="margin-bottom:10px">
+    <input id="newEmail" type="email" placeholder="新員工 Email" size="26">
+    <select id="newRole"><option value="edit">可編輯</option><option value="view">僅檢視</option><option value="admin">管理者</option></select>
+    <button id="addBtn" type="button">新增帳號</button>
+  </div>
+  <table><thead><tr><th>員工</th><th>Email</th><th>權限</th><th></th></tr></thead><tbody id="users"></tbody></table>
+</section>
+
+<section class="card" id="board">
+  <h2>③ 多人共用資料：一人改，大家同步看到</h2>
+  <p class="sub">左右是兩位同事的畫面。任何一邊新增、勾選任務，另一邊立刻出現（正式版用資料庫，不是各人電腦各存一份）。</p>
+  <div class="boards">
+    <div class="view" id="viewA"><div class="bar"><span><b>王經理</b>的畫面</span><span class="live">● 即時同步</span></div><ul id="boardA"></ul><form id="formA"><input id="inA" placeholder="新增任務（王經理）"><button>新增</button></form></div>
+    <div class="view" id="viewB"><div class="bar"><span><b>林會計</b>的畫面</span><span class="live">● 即時同步</span></div><ul id="boardB"></ul><form id="formB"><input id="inB" placeholder="新增任務（林會計）"><button>新增</button></form></div>
+  </div>
+</section>
+</div>
+
+<section class="card" id="steps">
+  <h2>④ 現有程式怎麼上架：六個步驟</h2>
+  <p class="sub">不熟主機、資料庫、網域也沒關係，從現況檢查做到上線，一併處理。</p>
+  <ol class="steps">
+    <li><b><span class="n">1</span>現況檢查</b><span>檢視現有程式檔，列出要改的地方與風險</span></li>
+    <li><b><span class="n">2</span>架構與網域</b><span>選主機，綁公司子網域（例：internal.公司網域）</span></li>
+    <li><b><span class="n">3</span>登入與權限</b><span>Email 白名單，管理者增減員工與權限</span></li>
+    <li><b><span class="n">4</span>共用資料庫</b><span>多人看到同一份資料，不再只存個人電腦</span></li>
+    <li><b><span class="n">5</span>上線與測試</b><span>基本資安設定、功能測試後正式開放</span></li>
+    <li><b><span class="n">6</span>備份與交付</b><span>備份機制、原始碼、操作說明完整交付</span></li>
+  </ol>
+</section>
+</main>
+<footer>概念示範・虛構資料・不收集任何個資</footer>
+<script>
+(function(){
+  var KEY='iad-state-v1', CH=null;
+  try{CH=new BroadcastChannel('iad-demo')}catch(e){}
+  var ROLE={admin:'管理者',edit:'可編輯',view:'僅檢視'};
+  var seed={users:[
+    {n:'陳總',e:'boss@demo.example',r:'admin'},
+    {n:'王經理',e:'wang@demo.example',r:'edit'},
+    {n:'林會計',e:'lin@demo.example',r:'edit'},
+    {n:'張助理',e:'chang@demo.example',r:'view'}],
+    tasks:[
+    {id:1,t:'整理 11 月業績看板',done:true,by:'王經理'},
+    {id:2,t:'核對廠商請款單',done:false,by:'林會計'},
+    {id:3,t:'更新員工到職名單',done:false,by:'王經理'}],nid:4};
+  var S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  if(!S||!S.users)S=JSON.parse(JSON.stringify(seed));
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} if(CH)CH.postMessage('x')}
+  var $=function(i){return document.getElementById(i)};
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function chips(){ $('chips').innerHTML='白名單範例（點一下帶入）：'+S.users.map(function(u){return '<span class="chip" data-e="'+esc(u.e)+'">'+esc(u.e)+'</span>'}).join(''); }
+  function users(){
+    $('users').innerHTML=S.users.map(function(u,i){
+      return '<tr><td>'+esc(u.n)+'</td><td>'+esc(u.e)+'</td><td><span class="tag '+u.r+'">'+ROLE[u.r]+'</span></td><td>'+(u.r==='admin'?'':'<button class="del" data-i="'+i+'">移除</button>')+'</td></tr>';
+    }).join('');
+  }
+  var lastIds={};
+  function board(){
+    ['A','B'].forEach(function(k){
+      $('board'+k).innerHTML=S.tasks.map(function(t){
+        return '<li data-id="'+t.id+'" class="'+(t.done?'done':'')+(lastIds[t.id+k]?'':' flash')+'"><input type="checkbox" '+(t.done?'checked':'')+' data-id="'+t.id+'"><span class="t">'+esc(t.t)+'</span><span class="by">'+esc(t.by)+'</span></li>';
+      }).join('');
+      S.tasks.forEach(function(t){lastIds[t.id+k]=1});
+    });
+  }
+  function reload(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.users)S=s}catch(e){} users();board();chips();}
+  if(CH)CH.onmessage=reload;
+  window.addEventListener('storage',function(e){if(e.key===KEY)reload()});
+  function msg(ok,t){var m=$('loginMsg');m.className=ok?'ok':'no';m.textContent=t}
+  function login(){
+    var e=$('email').value.trim().toLowerCase();
+    var u=S.users.filter(function(x){return x.e.toLowerCase()===e})[0];
+    if(!e){msg(false,'請輸入 Email');return}
+    if(!u){msg(false,'✕ 這個 Email 不在白名單內，無法登入');$('app').style.display='none';return}
+    msg(true,'✓ 歡迎，'+u.n+'（'+ROLE[u.r]+'）');
+    $('app').style.display='block';
+    $('admin').style.display=u.r==='admin'?'':'none';
+    if(u.r!=='admin'){msg(true,'✓ 歡迎，'+u.n+'（'+ROLE[u.r]+'）。管理帳號的區塊只有管理者看得到')}
+    users();board();
+  }
+  $('loginBtn').onclick=login;
+  $('email').addEventListener('keydown',function(e){if(e.key==='Enter')login()});
+  $('chips').onclick=function(e){var c=e.target.closest('.chip');if(c){$('email').value=c.dataset.e}};
+  $('addBtn').onclick=function(){
+    var e=$('newEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(e))return;
+    if(S.users.some(function(u){return u.e.toLowerCase()===e.toLowerCase()}))return;
+    S.users.push({n:e.split('@')[0],e:e,r:$('newRole').value});$('newEmail').value='';save();users();chips();
+  };
+  $('users').onclick=function(e){var b=e.target.closest('.del');if(!b)return;S.users.splice(+b.dataset.i,1);save();users();chips()};
+  function addTask(k){var inp=$('in'+k);var v=inp.value.trim();if(!v)return;S.tasks.push({id:S.nid++,t:v,done:false,by:k==='A'?'王經理':'林會計'});inp.value='';save();board()}
+  $('formA').onsubmit=function(e){e.preventDefault();addTask('A')};
+  $('formB').onsubmit=function(e){e.preventDefault();addTask('B')};
+  $('board').addEventListener('change',function(e){var id=+e.target.dataset.id;S.tasks.forEach(function(t){if(t.id===id)t.done=e.target.checked});save();lastIds={};board()});
+  users();board();chips();
+  var v=$('heroVideo');v.addEventListener('ended',function(){v.pause()});
+})();
+</script>
+</body>
+</html>
